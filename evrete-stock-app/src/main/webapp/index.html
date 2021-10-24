@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Evrete showcase | Stock app</title>
+    <!-- Bootstrap CSS -->
+    <!--suppress SpellCheckingInspection -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.6.1/font/bootstrap-icons.css">
+    <!-- Project files -->
+    <script src="showcase-utils.js" type="module"></script>
+    <script src="stock-app-ohlc.js" type="module"></script>
+    <script src="stock-app.js" type="module"></script>
+
+    <style>
+        svg {
+            width: 100%;
+            height: 100%;
+        }
+
+        /*noinspection CssUnusedSymbol*/
+        #logs .ERROR {
+            color: darkred;
+        }
+
+        #logs li {
+            font-family: monospace;
+        }
+
+        #chart-wrapper {
+            position: relative;
+            padding-bottom: 1em;
+        }
+
+        #delay-value {
+            font-family: monospace;
+        }
+
+        /*noinspection CssUnusedSymbol*/
+        #rule-monitor span.badge {
+            padding: 6px 8px;
+        }
+
+        #prices {
+            min-height: 20em;
+        }
+
+    </style>
+
+    <script type="module">
+        import {tradeApp} from './stock-app.js';
+        window.tradeApp = tradeApp('/evrete-stock-app/ws/socket');
+    </script>
+</head>
+<body>
+
+<div class="container-fluid">
+    <div class="row mt-4 mb-2">
+        <div class="col-lg-8">
+            <div id="chart-wrapper">
+                <svg class="svg"
+                     height="320"
+                     id="plot"
+                     preserveAspectRatio="none"
+                     viewBox="0 0 640 320" width="640">
+                    <defs>
+                        <g id="x-grid-line">
+                            <line class="stroke-main stroke-2x" x1="0" x2="0" y1="320" y2="318"/>
+                            <line class="grid-line" x1="0" x2="0" y1="1" y2="320"/>
+                        </g>
+                        <g id="y-grid-line">
+                            <line class="stroke-main stroke-2x" x1="0" x2="1" y1="0" y2="0"/>
+                            <line class="grid-line" x1="1" x2="640" y1="0" y2="0"/>
+                        </g>
+                    </defs>
+                    <g id="ohlc"/>
+                    <g id="paths"/>
+
+                    <rect class="stroke-main stroke-1x"
+                          height="640"
+                          id="shades"
+                          width="1280"
+                          x="1280"
+                          y="-160"/>
+                    <g id="axes">
+                        <line class="stroke-main stroke-4x" x1="0" x2="0" y1="320" y2="0"/>
+                        <line class="stroke-main stroke-4x" x1="0" x2="640" y1="320" y2="320"/>
+                    </g>
+
+                    <g id="grid"/>
+                    <style>
+                        /*noinspection CssUnusedSymbol*/
+                        #ohlc .ohlc-hl {
+                            stroke-width: 1.0;
+                            stroke: #666;
+                        }
+
+                        /*noinspection CssUnusedSymbol*/
+                        #ohlc .ohlc-short {
+                            stroke: #C8043F;
+                        }
+
+                        /*noinspection CssUnusedSymbol*/
+                        #ohlc .ohlc-long {
+                            stroke: #05765D;
+                        }
+
+                        #paths path {
+                            fill: none;
+                            stroke-width: 1.0;
+                        }
+
+                        /*noinspection CssUnusedSymbol*/
+                        #paths .marker {
+                            stroke-width: 1.0;
+                            opacity: 0.5;
+                        }
+
+                        /*noinspection CssUnusedSymbol*/
+                        #paths .label {
+                            font-size: 7px;
+                        }
+
+                        /*noinspection CssUnusedSymbol*/
+                        #paths .label.top {
+                            text-anchor: end;
+                        }
+
+                        /*noinspection CssUnusedSymbol*/
+                        #paths .label.bottom {
+                            text-anchor: start;
+                        }
+
+                        /*noinspection CssUnusedSymbol*/
+                        .x-label {
+                            font-size: 7px;
+                            text-anchor: middle;
+                            font-family: 'Roboto Slab', serif;
+                            color: #666666;
+                        }
+
+                        /*noinspection CssUnusedSymbol*/
+                        .y-label {
+                            font-size: 7px;
+                            text-anchor: start;
+                            font-family: 'Roboto Slab', serif;
+                            color: #666666;
+                        }
+
+                        #shades {
+                            fill: linen;
+                            opacity: 0.8;
+                        }
+
+                        .grid-line {
+                            stroke-width: 0.4;
+                            stroke-dasharray: .6 1.2;
+                            stroke: #999;
+                        }
+
+                        .stroke-main {
+                            stroke: #666;
+                        }
+
+                        .stroke-1x {
+                            stroke-width: 0.6;
+                        }
+
+                        .stroke-2x {
+                            stroke-width: 1.2;
+                        }
+
+                        .stroke-4x {
+                            stroke-width: 1.8;
+                        }
+                    </style>
+
+                    Your browser does not support inline SVG.
+                </svg>
+                <div class="row mt-2">
+                    <div class="col-auto col-sm-3">
+                        <div class="btn-group" role="group">
+                            <button class="btn btn-primary"
+                                    disabled
+                                    id="run-button"
+                                    onclick="tradeApp.runSession()"
+                                    title="Start session">
+
+                                <i class="bi bi-play-fill"></i>
+                            </button>
+                            <button class="btn btn-secondary"
+                                    disabled
+                                    id="stop-button"
+                                    onclick="tradeApp.stopSession()"
+                                    title="Stop session">
+                                <i class="bi bi-stop"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="col-auto col-sm-3">
+                        <p class="text-end mt-2"><label id="delay-value" for="delay"></label></p>
+                    </div>
+                    <div class="col-auto col-sm-6">
+                        <!-- Delay control -->
+                        <input id="delay"
+                               max="1000" min="0" onchange="tradeApp.onDelayChange();"
+                               oninput="tradeApp.onDelayChange();" step="10"
+                               class="form-range mt-2"
+                               type="range"
+                               value="100"/>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4">
+            <h4>Rule activity</h4>
+            <ol id="rule-monitor" class="list-group list-group-flush small"></ol>
+        </div>
+    </div>
+    <div class="row mt-0 mb-4">
+        <div class="col-lg-6">
+            <h4>Event log</h4>
+            <ol class="clearable" id="logs"></ol>
+        </div>
+        <div class="col-lg-6">
+            <h4>Price data</h4>
+            <div class="row">
+                <div class="col">
+                    <textarea class="form-control" placeholder="Price data" id="prices" rows="10"></textarea>
+                    <label for="prices"></label>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
