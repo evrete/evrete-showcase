@@ -6,14 +6,6 @@ public class JsonCandle {
     public double low;
     public double close;
 
-    public JsonCandle(double open, double high, double low, double close) {
-        this();
-        this.open = open;
-        this.high = high;
-        this.low = low;
-        this.close = close;
-    }
-
     public JsonCandle() {
     }
 

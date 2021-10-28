@@ -3,6 +3,7 @@ package org.evrete.showcase.shared;
 import javax.websocket.*;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public abstract class AbstractSocketEndpoint<T extends AbstractSocketSession> {
@@ -41,6 +42,7 @@ public abstract class AbstractSocketEndpoint<T extends AbstractSocketSession> {
                 LOGGER.warning("Skipping message with unknown type: '" + message + "'");
             }
         } catch (Throwable e) {
+            LOGGER.log(Level.SEVERE, "processing error", e);
             sessionWrapper.send(e);
         }
     }

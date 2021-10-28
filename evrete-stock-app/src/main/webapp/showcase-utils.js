@@ -19,12 +19,15 @@ export function createWSConnection(path, onMessage, onError, onClose) {
         }
         return {
             write: function (type, obj) {
-                const payload = obj ? JSON.stringify(obj) : null;
-
-                webSocket.send(JSON.stringify({
-                    type: type,
-                    payload: payload
-                }))
+                if(obj) {
+                    if(typeof obj === 'object') {
+                        webSocket.send(JSON.stringify({type: type, payload: JSON.stringify(obj)}))
+                    } else {
+                        webSocket.send(JSON.stringify({type: type, payload: obj}))
+                    }
+                } else {
+                    webSocket.send(JSON.stringify({type: type}))
+                }
             }
         }
     } else {

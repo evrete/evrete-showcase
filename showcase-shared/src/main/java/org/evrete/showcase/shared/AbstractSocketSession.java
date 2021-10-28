@@ -4,7 +4,6 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 import javax.websocket.Session;
-import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -28,8 +27,8 @@ public abstract class AbstractSocketSession {
             synchronized (session) {
                 try {
                     session.getBasicRemote().sendText(rawMessage);
-                } catch (IOException e) {
-                    LOGGER.log(Level.WARNING, "Unable to send to remote", e);
+                } catch (Throwable t) {
+                    LOGGER.log(Level.WARNING, "Unable to send to remote", t);
                 }
             }
         }
