@@ -12,7 +12,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <evrete.version>2.1.06-SNAPSHOT</evrete.version>
+        <evrete.version>2.1.06</evrete.version>
 
     </properties>
     <build>
@@ -87,7 +87,6 @@
     <modules>
         <module>showcase-shared</module>
         <module>evrete-stock-app</module>
-        <module>evrete-chess-queens</module>
-        <module>evrete-town-emulation</module>
+        <module>evrete-town-abm</module>
     </modules>
 </project>

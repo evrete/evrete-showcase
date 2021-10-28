@@ -1,10 +1,8 @@
 package org.evrete.showcase.stock;
 
-import org.evrete.Configuration;
 import org.evrete.KnowledgeService;
 import org.evrete.api.Knowledge;
 import org.evrete.showcase.shared.Utils;
-import org.evrete.showcase.stock.rule.Constants;
 import org.evrete.showcase.stock.rule.EmaRuleset;
 import org.evrete.showcase.stock.rule.TradingRuleset;
 
