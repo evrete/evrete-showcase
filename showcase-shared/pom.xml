@@ -5,17 +5,12 @@
     <parent>
         <artifactId>evrete-showcase</artifactId>
         <groupId>org.evrete</groupId>
-        <version>2.0.4-SNAPSHOT</version>
+        <version>1.0.1</version>
     </parent>
 
     <packaging>jar</packaging>
     <name>showcase-shared</name>
-    <version>2.0.4-SNAPSHOT</version>
-
-    <build>
-        <plugins>
-        </plugins>
-    </build>
+    <version>1.0.1</version>
 
     <dependencies>
         <dependency>

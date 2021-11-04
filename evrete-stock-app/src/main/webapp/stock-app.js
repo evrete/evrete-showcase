@@ -1,5 +1,5 @@
 import {clearChildren, createLogger, createWSConnection, removeChildren} from "./showcase-utils.js";
-import {newChart} from "./stock-app-ohlc.js";
+import {newChart} from "./stock-app-chart.js";
 
 export function tradeApp(socketAddr) {
     const PRICES = document.getElementById("prices");
@@ -9,7 +9,17 @@ export function tradeApp(socketAddr) {
     const BUTTON_START = document.getElementById('run-button');
     const DELAY_SLIDER = document.getElementById('delay');
     const CHART = newChart();
-    const SOCKET = createWSConnection(socketAddr, onMessage, onError, onClose);
+
+
+    const SOCKET = createWSConnection(socketAddr, {
+        'onMessage': (m) => onMessage(m),
+        'onError': (e) => onError(e),
+        'onClose': (e) => onClose(e),
+        'onOpen': function () {
+            LOGGER.log("Connection established");
+        }
+    });
+
     onDelayChange();
 
 

@@ -18,15 +18,6 @@ public class Utils {
         return new Gson().fromJson(src, t);
     }
 
-    public static void delay(int ms) {
-        if (ms <= 0) return;
-        try {
-            Thread.sleep(ms);
-        } catch (InterruptedException ignored) {
-
-        }
-    }
-
     public static String readResourceAsString(ServletContext ctx, String path) throws IOException {
 
         try (ByteArrayOutputStream buffer = new ByteArrayOutputStream(); InputStream is = ctx.getResourceAsStream(path)) {
