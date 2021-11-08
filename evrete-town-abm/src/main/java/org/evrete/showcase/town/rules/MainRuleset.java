@@ -15,13 +15,13 @@ public class MainRuleset extends Commons {
     @EnvironmentListener("world")
     public void initWorld(World world) {
         this.world = world;
-        LOGGER.info("World initialized");
+        LOGGER.fine("World initialized");
     }
 
     @EnvironmentListener("working-probability")
     public void initWorkingProbability(double shareOfWorkingPeople) {
         this.shareOfWorkingPeople = shareOfWorkingPeople;
-        LOGGER.info("Share of working people is set to " + shareOfWorkingPeople);
+        LOGGER.fine("Share of working people is set to " + shareOfWorkingPeople);
     }
 
 

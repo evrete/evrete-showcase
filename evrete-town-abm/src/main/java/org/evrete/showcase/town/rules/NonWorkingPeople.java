@@ -19,9 +19,8 @@ public class NonWorkingPeople extends Commons {
     @EnvironmentListener("stay-home-probability")
     public void initWorkingProbability(double p) {
         this.stayHomeProbability = p;
-        LOGGER.info("Leisure at home probability is set to: " + p);
+        LOGGER.fine("Leisure at home probability is set to: " + p);
     }
-
 
 
     @EnvironmentListener("world")

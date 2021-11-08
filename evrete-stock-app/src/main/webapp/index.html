@@ -35,10 +35,6 @@
             padding-bottom: 1em;
         }
 
-        #delay-value {
-            font-family: monospace;
-        }
-
         /*noinspection CssUnusedSymbol*/
         #rule-monitor span.badge {
             padding: 6px 8px;
@@ -48,11 +44,97 @@
             min-height: 20em;
         }
 
+        /* chart */
+        /*noinspection CssUnusedSymbol*/
+        #ohlc .ohlc-hl {
+            stroke-width: 1.0;
+            stroke: #666;
+        }
+
+        /*noinspection CssUnusedSymbol*/
+        #ohlc .ohlc-short {
+            stroke: #C8043F;
+        }
+
+        /*noinspection CssUnusedSymbol*/
+        #ohlc .ohlc-long {
+            stroke: #05765D;
+        }
+
+        #paths path {
+            fill: none;
+            stroke-width: 1.0;
+        }
+
+        /*noinspection CssUnusedSymbol*/
+        #paths .marker {
+            stroke-width: 1.0;
+            opacity: 0.5;
+        }
+
+        /*noinspection CssUnusedSymbol*/
+        #paths .label {
+            font-size: 7px;
+        }
+
+        /*noinspection CssUnusedSymbol*/
+        #paths .label.top {
+            text-anchor: end;
+        }
+
+        /*noinspection CssUnusedSymbol*/
+        #paths .label.bottom {
+            text-anchor: start;
+        }
+
+        /*noinspection CssUnusedSymbol*/
+        .x-label {
+            font-size: 7px;
+            text-anchor: middle;
+            font-family: 'Roboto Slab', serif;
+            color: #666666;
+        }
+
+        /*noinspection CssUnusedSymbol*/
+        .y-label {
+            font-size: 7px;
+            text-anchor: start;
+            font-family: 'Roboto Slab', serif;
+            color: #666666;
+        }
+
+        #shades {
+            fill: linen;
+            opacity: 0.8;
+        }
+
+        .grid-line {
+            stroke-width: 0.4;
+            stroke-dasharray: .6 1.2;
+            stroke: #999;
+        }
+
+        .stroke-main {
+            stroke: #666;
+        }
+
+        .stroke-1x {
+            stroke-width: 0.6;
+        }
+
+        .stroke-2x {
+            stroke-width: 1.2;
+        }
+
+        .stroke-4x {
+            stroke-width: 1.8;
+        }
     </style>
 
     <script type="module">
         import {tradeApp} from './stock-app.js';
-        window.tradeApp = tradeApp('/evrete-stock-app/ws/socket');
+
+        window.tradeApp = tradeApp('/evrete-stock-app/api/ws');
     </script>
 </head>
 <body>
@@ -91,92 +173,6 @@
                     </g>
 
                     <g id="grid"/>
-                    <style>
-                        /*noinspection CssUnusedSymbol*/
-                        #ohlc .ohlc-hl {
-                            stroke-width: 1.0;
-                            stroke: #666;
-                        }
-
-                        /*noinspection CssUnusedSymbol*/
-                        #ohlc .ohlc-short {
-                            stroke: #C8043F;
-                        }
-
-                        /*noinspection CssUnusedSymbol*/
-                        #ohlc .ohlc-long {
-                            stroke: #05765D;
-                        }
-
-                        #paths path {
-                            fill: none;
-                            stroke-width: 1.0;
-                        }
-
-                        /*noinspection CssUnusedSymbol*/
-                        #paths .marker {
-                            stroke-width: 1.0;
-                            opacity: 0.5;
-                        }
-
-                        /*noinspection CssUnusedSymbol*/
-                        #paths .label {
-                            font-size: 7px;
-                        }
-
-                        /*noinspection CssUnusedSymbol*/
-                        #paths .label.top {
-                            text-anchor: end;
-                        }
-
-                        /*noinspection CssUnusedSymbol*/
-                        #paths .label.bottom {
-                            text-anchor: start;
-                        }
-
-                        /*noinspection CssUnusedSymbol*/
-                        .x-label {
-                            font-size: 7px;
-                            text-anchor: middle;
-                            font-family: 'Roboto Slab', serif;
-                            color: #666666;
-                        }
-
-                        /*noinspection CssUnusedSymbol*/
-                        .y-label {
-                            font-size: 7px;
-                            text-anchor: start;
-                            font-family: 'Roboto Slab', serif;
-                            color: #666666;
-                        }
-
-                        #shades {
-                            fill: linen;
-                            opacity: 0.8;
-                        }
-
-                        .grid-line {
-                            stroke-width: 0.4;
-                            stroke-dasharray: .6 1.2;
-                            stroke: #999;
-                        }
-
-                        .stroke-main {
-                            stroke: #666;
-                        }
-
-                        .stroke-1x {
-                            stroke-width: 0.6;
-                        }
-
-                        .stroke-2x {
-                            stroke-width: 1.2;
-                        }
-
-                        .stroke-4x {
-                            stroke-width: 1.8;
-                        }
-                    </style>
 
                     Your browser does not support inline SVG.
                 </svg>
@@ -201,16 +197,9 @@
                         </div>
                     </div>
                     <div class="col-auto col-sm-3">
-                        <p class="text-end mt-2"><label id="delay-value" for="delay"></label></p>
+                        <p class="text-end"><label for="delay">Delay</label></p>
                     </div>
-                    <div class="col-auto col-sm-6">
-                        <!-- Delay control -->
-                        <input id="delay"
-                               max="1000" min="0" onchange="tradeApp.onDelayChange();"
-                               oninput="tradeApp.onDelayChange();" step="10"
-                               class="form-range mt-2"
-                               type="range"
-                               value="100"/>
+                    <div id="delay" class="col-auto col-sm-6">
                     </div>
                 </div>
             </div>

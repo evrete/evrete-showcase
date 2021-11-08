@@ -44,7 +44,7 @@ public class StockSocketSession extends AbstractSocketSession {
 
         configMessage.rules.addAll(jsonRules);
         send("CONFIG", configMessage);
-        send("LOG", "Maximum entries: " + MAX_DATA_SIZE);
+        send("LOG", "Maximum price entries: " + MAX_DATA_SIZE);
     }
 
     @Override

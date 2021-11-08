@@ -8,6 +8,7 @@ public class RunConfig {
     public Viewport viewport = new Viewport();
     public int population = MAX_POPULATION;
     public List<JsonRule> rules = new ArrayList<>();
+    @SuppressWarnings("unused")
     public int maxPopulation = MAX_POPULATION;
     public int workingPercent = 70;
     public int leisureAtHomePercent = 45;

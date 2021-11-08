@@ -16,7 +16,7 @@
     <script type="module">
         import {town} from './town-abm.js';
 
-        window.town = town('/evrete-town-abm/ws/socket');
+        window.town = town('/evrete-town-abm/api/ws');
     </script>
     <style>
         :root {
@@ -136,7 +136,7 @@
                              id="map-svg"
                              xmlns="http://www.w3.org/2000/svg">
                             <g>
-                                <image height="2048" href="map.png" width="2048"/>
+                                <image height="2048" href="town.png" width="2048"/>
                             </g>
                             <g id="svg-layers"/>
                         </svg>
@@ -147,10 +147,10 @@
                         </div>
                         <div id="zoom-controls">
                             <div class="btn-group">
-                                <button class="btn btn-secondary" id="zoom-in-button" onclick="town.zoomIn()">
+                                <button class="btn btn-secondary" id="zoom-in-button">
                                     <i class="bi bi-zoom-in"></i>
                                 </button>
-                                <button class="btn btn-secondary" id="zoom-out-button" onclick="town.zoomOut()">
+                                <button class="btn btn-secondary" id="zoom-out-button">
                                     <i class="bi bi-zoom-out"></i>
                                 </button>
                             </div>
@@ -311,7 +311,6 @@
             </div>
         </div>
     </div>
-
 </div>
 </body>
 </html>

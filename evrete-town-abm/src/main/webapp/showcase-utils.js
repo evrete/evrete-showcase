@@ -1,6 +1,8 @@
 export function createWSConnection(path, conf) {
     const onOpen = conf['onopen'] || conf['onOpen'];
-    const onError = conf['onerror'] || conf['onError'];
+    const onError = conf['onerror'] || conf['onError'] || ((e) => {
+        console.error(e)
+    });
     const onClose = conf['onclose'] || conf['onClose'];
     const onMessage = conf['onmessage'] || conf['onMessage'];
 
@@ -11,6 +13,8 @@ export function createWSConnection(path, conf) {
             webSocket.onopen = onOpen
         }
 
+        webSocket.onerror = onError;
+
         if (onClose) {
             webSocket.onclose = onClose;
         }
@@ -19,11 +23,15 @@ export function createWSConnection(path, conf) {
             onMessage(JSON.parse(m.data));
         };
 
-        if (onError) {
-            webSocket.onerror = onError;
-        } else {
-            webSocket.onerror = function (err) {
-                console.error(err);
+        const sendText = (msg) => {
+            if (webSocket.readyState === webSocket.OPEN) {
+                try {
+                    webSocket.send(msg);
+                } catch (e) {
+                    onError(e);
+                }
+            } else {
+                onError("Websocket connection is closed. Try reloading the page.");
             }
         }
 
@@ -31,12 +39,12 @@ export function createWSConnection(path, conf) {
             write: function (type, obj) {
                 if (obj) {
                     if (typeof obj === 'object') {
-                        webSocket.send(JSON.stringify({type: type, payload: JSON.stringify(obj)}))
+                        sendText(JSON.stringify({type: type, payload: JSON.stringify(obj)}))
                     } else {
-                        webSocket.send(JSON.stringify({type: type, payload: obj}))
+                        sendText(JSON.stringify({type: type, payload: obj}))
                     }
                 } else {
-                    webSocket.send(JSON.stringify({type: type}))
+                    sendText(JSON.stringify({type: type}))
                 }
             }
         }
@@ -76,7 +84,6 @@ export function removeChildren(el) {
     }
 }
 
-
 export function createSlider(parentId, options) {
     const parent = document.getElementById(parentId);
     if (parent) {
@@ -94,6 +101,7 @@ export function createSlider(parentId, options) {
         col_r.classList.add('col-auto')
         col_r.classList.add('text-center')
         col_r.classList.add('font-monospace')
+        col_r.classList.add('text-nowrap')
         col_r.classList.add('px-1')
         col_r.classList.add('small')
         col_r.classList.add('fw-light')
@@ -118,18 +126,25 @@ export function createSlider(parentId, options) {
         }
 
         i.oninput = function () {
-            v.innerText = i.value;
+            v.innerText = parseInt(i.value).toLocaleString();
         }
-        v.innerText = options.value;
+        v.innerText = options.value.toLocaleString();
 
         col_r.appendChild(v);
         col_l.appendChild(i);
         wrapper.appendChild(col_l);
         wrapper.appendChild(col_r);
         parent.appendChild(wrapper);
+
+        return {
+            value: function () {
+                return i.value;
+            }
+        }
     } else {
         console.error('No such element', parentId);
     }
+
 }
 
 export function createLogger(id) {

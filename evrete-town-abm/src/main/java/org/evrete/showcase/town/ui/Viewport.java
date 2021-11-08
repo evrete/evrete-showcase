@@ -9,6 +9,8 @@ public class Viewport {
     public int y;
     // Size in pixels
     public int zoom;
+    // Aggregation level
+    public int resolution = 5; // 2^5 = 32 (map will be split to 32x32 cells by default)
 
     @Override
     public String toString() {

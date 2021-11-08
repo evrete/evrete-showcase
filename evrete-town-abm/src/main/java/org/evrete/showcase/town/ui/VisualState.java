@@ -10,7 +10,7 @@ public class VisualState {
     private final Map<String, Integer> cache = new HashMap<>();
     private final List<XYPoint> scanScope = new ArrayList<>();
     private final MapTotals peopleLocations = new MapTotals();
-    private final MapTotals buildingLocations = new MapTotals();
+    //private final MapTotals buildingLocations = new MapTotals();
     private int areaSize;
     private int responseZoom;
     private int roundBits;
@@ -27,30 +27,8 @@ public class VisualState {
     public VisualState(World world, Viewport initial) {
         this.world = world;
         setViewport(initial);
-        // Initial allocation on the UI map (homes)
-        for (Entity location : world.homes) {
-            buildingLocations.addTo(location, 1);
-        }
-
-        // Initial allocation on the UI map (businesses)
-        for (Entity location : world.businesses) {
-            buildingLocations.addTo(location, 1);
-        }
     }
 
-    private void init1() {
-/*
-        // Initial allocation on the UI map (persons)
-        for (Entity person : world.population) {
-            Entity initial = person.getProperty("home");
-            person.set("location", initial);
-            lastPersonLocationMap.put(person, initial);
-            peopleLocations.addTo(LocationType.valueOf(initial.type), initial, 1);
-        }
-*/
-
-
-    }
 
     private static double sigmoidAdjusted(double x) {
         double sigmoid = 1 / (1 + Math.exp(-x));
@@ -62,9 +40,8 @@ public class VisualState {
     public void setViewport(Viewport viewport) {
         this.resetMessage = true;
         this.cache.clear();
-        int deltaLevel = 5; // 32x32
 
-        this.responseZoom = viewport.zoom + deltaLevel;
+        this.responseZoom = viewport.zoom + viewport.resolution;
         this.areaSize = Viewport.MAX_SIZE >> responseZoom;
 
         this.scanScope.clear();
@@ -149,45 +126,8 @@ public class VisualState {
             }
         }
 
-
-/*
-        for (XYPoint xy : scanScope) {
-            int zoomedX = (xy.x >> roundBits);
-            int zoomedY = (xy.y >> roundBits);
-            Counter peopleCounter = peopleLocations.getCellSummary(responseZoom, zoomedX, zoomedY);
-            Counter buildingCounter = buildingLocations.getCellSummary(responseZoom, zoomedX, zoomedY);
-            for (LocationType s : LocationType.values()) {
-                String cellId = "c" + s.ordinal() + "_" + zoomedX + "_" + zoomedY;
-                int personCount = peopleCounter.getCount(s);
-                int locationCount = buildingCounter.getCount(s);
-                if (updateCache(cellId, personCount) || resetMessage) {
-                    message.add(s, new Area(cellId, xy.x, xy.y, cellOpacity(s, personCount, locationCount)));
-                }
-            }
-        }
-*/
         this.resetMessage = false;
         return message;
-    }
-
-    private double cellOpacity(LocationType s, int personCount, int locationCount) {
-        if (personCount == 0 || locationCount == 0) return 0.0;
-        double density = 1.0 * personCount / locationCount;
-        int totalPopulation = world.population.size();
-        int totalHomeLocations = world.homes.size();
-        int totalBusinessLocations = world.businesses.size();
-        double referenceDensity;
-        switch (s) {
-            case BUSINESS:
-                referenceDensity = 1.0 * totalPopulation / totalBusinessLocations;
-                break;
-            case RESIDENTIAL:
-                referenceDensity = 1.0 * totalPopulation / totalHomeLocations;
-                break;
-            default:
-                throw new IllegalStateException();
-        }
-        return 0.35 * sigmoidAdjusted(density / referenceDensity);
     }
 
     private boolean updateCache(String id, int count) {

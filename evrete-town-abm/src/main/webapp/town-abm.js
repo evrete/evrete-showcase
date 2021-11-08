@@ -6,7 +6,7 @@ const IMG_SIZE = 2048;
 const MAX_ZOOM = 3;
 
 
-export function town(socketAddr) {
+export function town(socketAddress) {
     const SVG = document.getElementById('map-svg');
     const LOGGER = createLogger('logs');
     const BUTTON_STOP = document.getElementById('stop-button');
@@ -14,8 +14,15 @@ export function town(socketAddr) {
     const INTERVAL = document.getElementById('interval');
     const DELAY = document.getElementById('delay');
     const RULES = document.getElementById('rules');
+    const ZOOM_IN = document.getElementById('zoom-in-button');
+    const ZOOM_OUT = document.getElementById('zoom-out-button');
+    const RESOLUTION = document.getElementById('resolution');
 
-    const SOCKET = createWSConnection(socketAddr,
+    ZOOM_IN.onclick = () => _zoom(1);
+    ZOOM_OUT.onclick = () => _zoom(-1);
+
+
+    const SOCKET = createWSConnection(socketAddress,
         {
             'onMessage': (m) => onMessage(m),
             'onError': (e) => onError(e),
@@ -30,6 +37,7 @@ export function town(socketAddr) {
 
     const CONFIG = {
         viewport: {
+            resolution: undefined,
             zoom: 0,
             x: 0,
             y: 0
@@ -197,6 +205,12 @@ export function town(socketAddr) {
             }
         })
 
+        // Init resolution
+        RESOLUTION.value = CONFIG.viewport.resolution;
+        RESOLUTION.onchange = () => {
+            CONFIG.viewport.resolution = RESOLUTION.value;
+            SOCKET.write('VIEWPORT', CONFIG.viewport);
+        }
 
         // Init rule monitor
         removeChildren(RULES);
@@ -231,7 +245,7 @@ export function town(socketAddr) {
         // clear current status
         let layers = state['layers'];
         for (const key in layers) {
-            if (layers.hasOwnProperty(key)) {
+            if (Object.hasOwn(layers, key)) {
                 let svgLayer = document.getElementById(key);
 
                 if (!svgLayer) {
@@ -264,9 +278,9 @@ export function town(socketAddr) {
 
     function drawRuleActivity(map) {
         for (const ruleId in map) {
-            if (map.hasOwnProperty(ruleId)) {
+            if (Object.hasOwn(map, ruleId)) {
                 const cnt = document.getElementById(ruleId);
-                cnt.innerText = map[ruleId].toLocaleString('en');
+                cnt.innerText = map[ruleId].toLocaleString();
             }
         }
     }
@@ -275,7 +289,7 @@ export function town(socketAddr) {
         // Draw pie chart
         const pieGroup = document.getElementById('chart-pie');
         for (const key in data) {
-            if (data.hasOwnProperty(key)) {
+            if (Object.hasOwn(data, key)) {
                 const e = document.getElementById('legend-' + key);
                 if (e) {
                     const p = Math.round(data[key] * 100);
@@ -290,7 +304,7 @@ export function town(socketAddr) {
         let currentX = 0;
         let currentY = -radius;
         for (const key in data) {
-            if (data.hasOwnProperty(key)) {
+            if (Object.hasOwn(data, key)) {
                 let val = data[key];
                 val = val >= 1.0 ? 0.9999999 : val; // Necessary to draw an arc
                 const angle = 2.0 * Math.PI * val;
@@ -320,14 +334,6 @@ export function town(socketAddr) {
 
         sessionStop: function () {
             SOCKET.write('STOP');
-        },
-
-        zoomIn: function () {
-            _zoom(1)
-        },
-
-        zoomOut: function () {
-            _zoom(-1)
         }
     }
 }

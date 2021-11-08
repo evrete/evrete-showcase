@@ -78,7 +78,7 @@ class TownSocketSession extends AbstractSocketSession {
 
         World world = World.factory(AppContext.MAP_DATA, config.population);
         send("LOG", String.format(
-                "Data initialized. residents: %d, working: %d%%, homes: %d, businesses: %d",
+                "Data initialized. Residents: %d, working: %d%%, homes: %d, businesses: %d",
                 world.population.size(),
                 config.workingPercent,
                 world.homes.size(),

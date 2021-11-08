@@ -1,17 +1,20 @@
-import {clearChildren, createLogger, createWSConnection, removeChildren} from "./showcase-utils.js";
+import {clearChildren, createLogger, createSlider, createWSConnection, removeChildren} from "./showcase-utils.js";
 import {newChart} from "./stock-app-chart.js";
 
-export function tradeApp(socketAddr) {
+export function tradeApp(wsAddress) {
     const PRICES = document.getElementById("prices");
     const LOGGER = createLogger('logs');
     const MONITOR = document.getElementById('rule-monitor');
     const BUTTON_STOP = document.getElementById('stop-button');
     const BUTTON_START = document.getElementById('run-button');
-    const DELAY_SLIDER = document.getElementById('delay');
+    const DELAY_SLIDER = createSlider('delay', {
+        min: 0,
+        max: 1000,
+        value: 100
+    });
     const CHART = newChart();
 
-
-    const SOCKET = createWSConnection(socketAddr, {
+    const SOCKET = createWSConnection(wsAddress, {
         'onMessage': (m) => onMessage(m),
         'onError': (e) => onError(e),
         'onClose': (e) => onClose(e),
@@ -20,12 +23,9 @@ export function tradeApp(socketAddr) {
         }
     });
 
-    onDelayChange();
-
-
     let ruleHistory = [];
     let ruleIds = [];
-// This will hold the price feed state
+    // This will hold the price feed state
     let DATA = {
         currentIndex: 0,
         prices: []
@@ -36,46 +36,49 @@ export function tradeApp(socketAddr) {
     }
 
     function onError(err) {
-        console.error("On error", err);
+        LOGGER.error(err);
     }
 
     function onMessage(msg) {
         switch (msg.type) {
-            case 'CONFIG':
+            case 'CONFIG': {
                 // Initial greeting with default rule and price history
                 const payload = JSON.parse(msg.payload);
-                //DATA.prices = payload['prices'];
                 // Init stocks editor
                 PRICES.textContent = payload['prices'];
                 validateStockData();
-                // Draw stock history
-                //SVG_OHLC.initChart(DATA.prices);
                 // Init rules
                 initRules(payload['rules']);
                 // Set run/stop controls
                 setControls([true, false]);
                 LOGGER.log('Default rules and data received from the server')
                 break;
-            case 'LOG':
+            }
+            case 'LOG': {
                 LOGGER.log(msg.payload);
                 break
-            case 'RULE_ACTIVATION':
+            }
+            case 'RULE_ACTIVATION': {
                 onRuleActivation(msg.payload);
                 break
-            case 'PRICE_INDICATOR':
+            }
+            case 'PRICE_INDICATOR': {
                 const ind = JSON.parse(msg.payload);
                 CHART.updateLine(ind.name, ind.id, ind.value);
                 break
-            case 'TREND_INFO':
+            }
+            case 'TREND_INFO': {
                 const t = JSON.parse(msg.payload);
                 CHART.drawMessage(t.id, t.message);
                 LOGGER.log("Trade event '" + t.message + "' at position: " + t.id);
                 break
-            case 'ERROR':
+            }
+            case 'ERROR': {
                 LOGGER.error(msg.payload);
                 setControls([true, false]);
                 break;
-            case 'READY':
+            }
+            case 'READY': {
                 if (DATA.currentIndex === DATA.prices.length) {
                     // No more data
                     SOCKET.write('STOP');
@@ -87,14 +90,16 @@ export function tradeApp(socketAddr) {
                     });
                 }
                 break;
-            case 'STOPPED':
+            }
+            case 'STOPPED': {
                 onSessionEnd();
                 break;
+            }
         }
     }
 
     function playRuleHistory(afterFunction) {
-        const delay = DELAY_SLIDER.value / ruleHistory.length;
+        const delay = DELAY_SLIDER.value() / ruleHistory.length;
         playRule(0, delay, afterFunction)
     }
 
@@ -122,7 +127,7 @@ export function tradeApp(socketAddr) {
             d.innerText = r.name;
 
             const s = document.createElement('span');
-            s.classList.add("badge", "bg-secondary", "rounded-pill", "visually-hidden", "font-monospace", "small");
+            s.classList.add("badge", "bg-primary", "rounded-pill", "visually-hidden", "font-monospace", "small");
             s.innerText = '0';
             s.id = 'count-' + r.id;
             item.append(d, s);
@@ -133,7 +138,7 @@ export function tradeApp(socketAddr) {
 
     function onSessionEnd() {
         setControls([true, false]);
-        LOGGER.log('Session ended.');
+        LOGGER.log('Session ended');
         const idx = DATA.currentIndex;
         if (idx === DATA.prices.length) {
             // The last index, meaning session hasn't been interrupted
@@ -171,18 +176,6 @@ export function tradeApp(socketAddr) {
     }
 
 
-    function onDelayChange() {
-        const delayValueEl = document.getElementById('delay-value');
-        const i = Number.parseInt(DELAY_SLIDER.value, 10);
-
-        let str = i.toString();
-        while (str.length < 4) {
-            str = ' ' + str;
-        }
-
-        delayValueEl.innerText = 'Delay:' + str + ' ms';
-    }
-
     function validateStockData() {
         try {
             let prices = JSON.parse(PRICES.value);
@@ -219,6 +212,7 @@ export function tradeApp(socketAddr) {
             }
 
         } catch (e) {
+            console.error(e);
             LOGGER.error("Invalid format")
         }
         return false;
@@ -254,9 +248,7 @@ export function tradeApp(socketAddr) {
         stopSession: function () {
             SOCKET.write('STOP');
             LOGGER.log('STOP signal sent');
-        },
-
-        onDelayChange: onDelayChange
+        }
     }
 }
 

@@ -5,7 +5,7 @@ import org.evrete.showcase.shared.AbstractSocketEndpoint;
 import javax.websocket.Session;
 import javax.websocket.server.ServerEndpoint;
 
-@ServerEndpoint(value = "/ws/socket")
+@ServerEndpoint(value = "/api/ws")
 public class TownSocketEndpoint extends AbstractSocketEndpoint<TownSocketSession> {
 
     @Override
