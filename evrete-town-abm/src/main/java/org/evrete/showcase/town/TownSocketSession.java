@@ -24,7 +24,7 @@ class TownSocketSession extends AbstractSocketSession {
         int ruleId = 0;
         List<JsonRule> rules = new ArrayList<>();
         for (Rule r : knowledge.getRules()) {
-            String id = "rule-id-" + ruleId;
+            String id = "rid" + ruleId;
             String name = r.getName();
             this.ruleNameIdMap.put(name, id);
             rules.add(new JsonRule(id, name));

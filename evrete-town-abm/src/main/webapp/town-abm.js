@@ -8,6 +8,8 @@ const MAX_ZOOM = 3;
 
 export function town(socketAddress) {
     const SVG = document.getElementById('map-svg');
+    const SVG_DUMMY_POINT = SVG.createSVGPoint();
+
     const LOGGER = createLogger('logs');
     const BUTTON_STOP = document.getElementById('stop-button');
     const BUTTON_START = document.getElementById('start-button');
@@ -17,6 +19,8 @@ export function town(socketAddress) {
     const ZOOM_IN = document.getElementById('zoom-in-button');
     const ZOOM_OUT = document.getElementById('zoom-out-button');
     const RESOLUTION = document.getElementById('resolution');
+    const SVG_LAYERS = [];
+    const STATS_LEGENDS = [];
 
     ZOOM_IN.onclick = () => _zoom(1);
     ZOOM_OUT.onclick = () => _zoom(-1);
@@ -33,7 +37,6 @@ export function town(socketAddress) {
         }
     );
 
-    const SVG_DUMMY_POINT = SVG.createSVGPoint();
 
     const CONFIG = {
         viewport: {
@@ -45,8 +48,10 @@ export function town(socketAddress) {
         workingPercent: undefined,
         maxPopulation: undefined,
         commuteSpeed: undefined,
-        leisureAtHomePercent: undefined
+        leisureAtHomePercent: undefined,
+        locationTypes: []
     };
+
 
     SVG.onclick = function (ev) {
         SVG_DUMMY_POINT.x = ev.clientX;
@@ -129,7 +134,6 @@ export function town(socketAddress) {
         }
     }
 
-
     function onMessage(msg) {
         switch (msg.type) {
             case 'CONFIGURATION':
@@ -161,7 +165,6 @@ export function town(socketAddress) {
         const rules = conf.rules;
         Object.assign(CONFIG, conf)
         delete CONFIG.rules;
-
 
         // Population slider
         createSlider('population-slider', {
@@ -225,100 +228,93 @@ export function town(socketAddress) {
             tr.appendChild(td2);
             RULES.appendChild(tr);
         })
+
+        // Create SVG group layers && legends
+        const layersGroup = document.getElementById('svg-layers');
+        for (let i = 0; i < CONFIG.locationTypes.length; i++) {
+            const typeName = CONFIG.locationTypes[i];
+            const svgLayer = document.createElementNS(SVG_NS, 'g');
+            // Layers
+            svgLayer.setAttribute('id', typeName);
+            svgLayer.classList.add(typeName);
+            layersGroup.appendChild(svgLayer);
+            SVG_LAYERS[i] = svgLayer;
+            // Legends
+            STATS_LEGENDS[i] = document.getElementById('legend-' + typeName);
+        }
     }
 
     function drawState(state) {
         // Set time
         document.getElementById('chart-time').innerHTML = state['time'];
 
-        // Clearing SVG layers
-        const layersGroup = document.getElementById('svg-layers');
-        if (state['reset']) {
-            removeChildren(layersGroup);
-        }
-
-        drawSummary(state['total']);
-        drawRuleActivity(state['activity']);
-
-
-        let cellSize = state['cellSize'];
-        // clear current status
-        let layers = state['layers'];
-        for (const key in layers) {
-            if (Object.hasOwn(layers, key)) {
-                let svgLayer = document.getElementById(key);
-
-                if (!svgLayer) {
-                    // Create a new one
-                    svgLayer = document.createElementNS(SVG_NS, 'g');
-                    svgLayer.setAttribute('id', key);
-                    svgLayer.classList.add(key);
-                    layersGroup.appendChild(svgLayer);
-                }
-
-                let cells = layers[key];
-                for (let i = 0; i < cells.length; i++) {
-                    const cell = cells[i];
-                    const cellId = cell['id'];
-                    let rect = document.getElementById(cellId);
-                    if (!rect) {
-                        rect = document.createElementNS(SVG_NS, 'rect');
-                        rect.setAttribute('id', cellId);
-                        rect.setAttribute("x", cell.x);
-                        rect.setAttribute("y", cell.y);
-                        rect.setAttribute("width", cellSize);
-                        rect.setAttribute("height", cellSize);
-                        svgLayer.appendChild(rect);
-                    }
-                    rect.setAttribute("fill-opacity", cell.opacity);
-                }
-            }
-        }
-    }
-
-    function drawRuleActivity(map) {
-        for (const ruleId in map) {
-            if (Object.hasOwn(map, ruleId)) {
-                const cnt = document.getElementById(ruleId);
-                cnt.innerText = map[ruleId].toLocaleString();
-            }
-        }
-    }
-
-    function drawSummary(data) {
-        // Draw pie chart
+        // Draw stats and chart
+        const stats = state['stats'];
         const pieGroup = document.getElementById('chart-pie');
-        for (const key in data) {
-            if (Object.hasOwn(data, key)) {
-                const e = document.getElementById('legend-' + key);
-                if (e) {
-                    const p = Math.round(data[key] * 100);
-                    e.innerHTML = p.toString() + '%';
-                }
-            }
-        }
-
         removeChildren(pieGroup);
+
         const radius = 50;
         let currentAngle = Math.PI / 2;
         let currentX = 0;
         let currentY = -radius;
-        for (const key in data) {
-            if (Object.hasOwn(data, key)) {
-                let val = data[key];
-                val = val >= 1.0 ? 0.9999999 : val; // Necessary to draw an arc
-                const angle = 2.0 * Math.PI * val;
-                const largeArc = angle > Math.PI ? ' 1 ' : ' 0 ';
+        for (let i = 0; i < CONFIG.locationTypes.length; i++) {
+            let val = stats[i];
+            // Update stats table
+            STATS_LEGENDS[i].innerHTML = Math.round(val * 100).toString() + '%';
+            // Build arc
+            val = val >= 1.0 ? 0.9999999 : val; // Necessary to draw an arc
+            const angle = 2.0 * Math.PI * val;
+            const largeArc = angle > Math.PI ? ' 1 ' : ' 0 ';
+            let path = 'M 0 0 ' + currentX + ' ' + currentY + ' A ' + radius + ' ' + radius + ' 0 ' + largeArc + ' 1 ';
+            currentAngle = currentAngle - angle;
+            currentX = radius * Math.cos(currentAngle);
+            currentY = -radius * Math.sin(currentAngle);
+            path = path + ' ' + currentX + ' ' + currentY + ' Z';
+            const pieSector = document.createElementNS(SVG_NS, 'path');
+            pieSector.setAttribute('d', path);
+            pieSector.setAttribute('class', CONFIG.locationTypes[i]);
+            pieGroup.appendChild(pieSector);
+        }
 
-                let path = 'M 0 0 ' + currentX + ' ' + currentY + ' A ' + radius + ' ' + radius + ' 0 ' + largeArc + ' 1 ';
-                currentAngle = currentAngle - angle;
-                currentX = radius * Math.cos(currentAngle);
-                currentY = -radius * Math.sin(currentAngle);
-                path = path + ' ' + currentX + ' ' + currentY + ' Z';
-                const pieSector = document.createElementNS(SVG_NS, 'path');
-                pieSector.setAttribute('d', path);
-                pieSector.setAttribute('class', key);
-                pieGroup.appendChild(pieSector);
+
+        // Draw ruleset activity
+        const activity = state['activity'];
+        for (const ruleId in activity) {
+            if (Object.prototype.hasOwnProperty.call(activity, ruleId)) {
+                const cnt = document.getElementById(ruleId);
+                cnt.innerText = activity[ruleId].toLocaleString();
+            }
+        }
+
+
+        // Draw map layers
+        const cellSize = state['cellSize'];
+        // clear current status
+        if (state['reset']) {
+            for (let i = 0; i < SVG_LAYERS.length; i++) {
+                removeChildren(SVG_LAYERS[i]);
+            }
+        }
+
+        for (let type = 0; type < CONFIG.locationTypes.length; type++) {
+            let cells = state['layers'][type];
+            const cellCount = cells.length;
+            for (let i = 0; i < cellCount; i = i + 3) {
+                const cellX = cells[i] * cellSize;
+                const cellY = cells[i + 1] * cellSize;
+                const opacity = cells[i + 2] / 100.0;
+                const cellId = 'c' + type + '-' + cellX + '-' + cellY;
+                let rect = document.getElementById(cellId);
+                if (!rect) {
+                    rect = document.createElementNS(SVG_NS, 'rect');
+                    rect.setAttribute('id', cellId);
+                    rect.setAttribute("x", cellX.toString());
+                    rect.setAttribute("y", cellY.toString());
+                    rect.setAttribute("width", cellSize);
+                    rect.setAttribute("height", cellSize);
+                    SVG_LAYERS[type].appendChild(rect);
+                }
+                rect.setAttribute("fill-opacity", opacity.toString());
             }
         }
     }

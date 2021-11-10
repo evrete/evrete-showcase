@@ -7,7 +7,10 @@ export function createWSConnection(path, conf) {
     const onMessage = conf['onmessage'] || conf['onMessage'];
 
     if ('WebSocket' in window || 'MozWebSocket' in window) {
-        const webSocket = new WebSocket('ws://' + location.host + path);
+
+        const protocol = location.protocol === 'https:' ? 'wss://' : 'ws://'
+
+        const webSocket = new WebSocket(protocol + location.host + path);
 
         if (onOpen) {
             webSocket.onopen = onOpen

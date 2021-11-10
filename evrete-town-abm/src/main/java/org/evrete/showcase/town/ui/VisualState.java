@@ -5,12 +5,12 @@ import org.evrete.showcase.town.model.*;
 import java.util.*;
 
 public class VisualState {
+    private static final int ARR_SIZE = LocationType.values().length;
     private static final double[] BRIGHTNESS;
     private final World world;
     private final Map<String, Integer> cache = new HashMap<>();
     private final List<XYPoint> scanScope = new ArrayList<>();
     private final MapTotals peopleLocations = new MapTotals();
-    //private final MapTotals buildingLocations = new MapTotals();
     private int areaSize;
     private int responseZoom;
     private int roundBits;
@@ -18,10 +18,10 @@ public class VisualState {
     private final Map<Entity, Entity> lastPersonLocationMap = new HashMap<>();
 
     static {
-        BRIGHTNESS = new double[LocationType.values().length];
-        BRIGHTNESS[LocationType.COMMUTING.ordinal()] = 0.7;
-        BRIGHTNESS[LocationType.BUSINESS.ordinal()] = 0.3;
-        BRIGHTNESS[LocationType.RESIDENTIAL.ordinal()] = 0.2;
+        BRIGHTNESS = new double[ARR_SIZE];
+        BRIGHTNESS[LocationType.COMMUTING.ordinal()] = 0.5;
+        BRIGHTNESS[LocationType.BUSINESS.ordinal()] = 0.4;
+        BRIGHTNESS[LocationType.RESIDENTIAL.ordinal()] = 0.4;
     }
 
     public VisualState(World world, Viewport initial) {
@@ -29,13 +29,6 @@ public class VisualState {
         setViewport(initial);
     }
 
-
-    private static double sigmoidAdjusted(double x) {
-        double sigmoid = 1 / (1 + Math.exp(-x));
-
-        double sig = 2.0 * (sigmoid - 0.5);
-        return Math.max(sig, 0.0);
-    }
 
     public void setViewport(Viewport viewport) {
         this.resetMessage = true;
@@ -80,25 +73,28 @@ public class VisualState {
             }
         }
 
-        StateMessage message = new StateMessage(resetMessage, areaSize, time.toString());
-
+        // Compute distribution
         Counter total = peopleLocations.getTotal();
-        message.setTotal(total);
+        double[] stats = new double[ARR_SIZE];
+        for (LocationType t : LocationType.values()) {
+            int ord = t.ordinal();
+            stats[ord] = 1.0 * total.getCount(t) / world.population.size();
+        }
 
-        // Compute averages for each location type
-        int[] counts = new int[LocationType.values().length];
-        int[] nonZeroCells = new int[LocationType.values().length];
+
+        StateMessage message = new StateMessage(resetMessage, areaSize, time.toString(), stats);
+
+
+        // Compute max people count for each location type
+        int[] maxCounts = new int[LocationType.values().length];
         for (XYPoint xy : scanScope) {
             int zoomedX = (xy.x >> roundBits);
             int zoomedY = (xy.y >> roundBits);
             Counter peopleCounter = peopleLocations.getCellSummary(responseZoom, zoomedX, zoomedY);
             for (LocationType t : LocationType.values()) {
+                int ord = t.ordinal();
                 int count = peopleCounter.getCount(t);
-                if (count > 0) {
-                    int i = t.ordinal();
-                    counts[i] += count;
-                    nonZeroCells[i]++;
-                }
+                maxCounts[ord] = Math.max(maxCounts[ord], count);
             }
         }
 
@@ -107,21 +103,23 @@ public class VisualState {
             int zoomedY = (xy.y >> roundBits);
             Counter peopleCounter = peopleLocations.getCellSummary(responseZoom, zoomedX, zoomedY);
             for (LocationType type : LocationType.values()) {
-                int typeId = type.ordinal();
+                int ord = type.ordinal();
                 int count = peopleCounter.getCount(type);
-                String cellId = "c" + typeId + "_" + zoomedX + "_" + zoomedY;
-                if (updateCache(cellId, count) || resetMessage) {
-                    // This is a new situation, an update message should be added
-                    double opacity;
-                    if (count == 0) {
-                        opacity = 0.0;
-                    } else {
-                        double average = 1.0 * counts[typeId] / nonZeroCells[typeId];
-                        double globalAverage = 0.3 + 1.0 * total.getCount(type) / world.population.size();
-                        opacity = BRIGHTNESS[typeId] * sigmoidAdjusted(globalAverage * count / average);
-                    }
+                String cellId = "c" + ord + "_" + zoomedX + "_" + zoomedY;
 
-                    message.add(type, new Area(cellId, xy.x, xy.y, opacity));
+                int opacity;
+                if (count == 0) {
+                    opacity = 0;
+                } else {
+                    //double op = emphasizeLower(1.0 * count / maxCounts[ord]);
+                    double op = 1.0 * count / maxCounts[ord];
+                    double globalRatio = emphasizeLower(stats[ord]);
+                    opacity = (int) (100 * op * globalRatio);
+                }
+
+                if (updateCache(cellId, opacity) || resetMessage) {
+                    // This is a new situation, an update message should be added
+                    message.add(type, xy.x / areaSize, xy.y / areaSize, (int) (BRIGHTNESS[ord] * opacity));
                 }
             }
         }
@@ -130,10 +128,15 @@ public class VisualState {
         return message;
     }
 
-    private boolean updateCache(String id, int count) {
+    private static double emphasizeLower(double x) {
+        return Math.sqrt(2 * x - x * x);
+    }
+
+    private boolean updateCache(String id, int opacity) {
+        int smoothened = opacity / 4; // Ignore 4% changes or less
         Integer cached = cache.get(id);
-        if (cached == null || cached != count) {
-            cache.put(id, count);
+        if (cached == null || cached != smoothened) {
+            cache.put(id, smoothened);
             return true;
         } else {
             return false;
