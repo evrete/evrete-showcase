@@ -12,7 +12,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <evrete.version>2.2.01</evrete.version>
+        <evrete.version>2.2.02</evrete.version>
 
     </properties>
     <build>
