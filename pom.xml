@@ -6,15 +6,16 @@
 
     <packaging>pom</packaging>
     <name>evrete-showcase</name>
-    <groupId>org.evrete</groupId>
-    <version>1.0.2</version>
+    <groupId>org.evrete-showcase</groupId>
+    <version>1.0.3</version>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <evrete.version>2.2.01</evrete.version>
-
+        <evrete.version>3.0.02</evrete.version>
     </properties>
+
+
     <build>
         <plugins>
             <plugin>
