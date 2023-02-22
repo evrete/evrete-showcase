@@ -5,19 +5,19 @@
     <artifactId>evrete-town-abm</artifactId>
     <parent>
         <artifactId>evrete-showcase</artifactId>
-        <groupId>org.evrete</groupId>
-        <version>1.0.2</version>
+        <groupId>org.evrete-showcase</groupId>
+        <version>1.0.3</version>
     </parent>
 
     <packaging>war</packaging>
     <name>evrete-town-abm</name>
-    <version>1.0.2</version>
+    <version>1.0.3</version>
 
     <dependencies>
         <dependency>
-            <groupId>org.evrete</groupId>
+            <groupId>org.evrete-showcase</groupId>
             <artifactId>showcase-shared</artifactId>
-            <version>1.0.2</version>
+            <version>1.0.3</version>
         </dependency>
     </dependencies>
 </project>

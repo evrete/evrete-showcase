@@ -4,19 +4,19 @@
     <artifactId>showcase-shared</artifactId>
     <parent>
         <artifactId>evrete-showcase</artifactId>
-        <groupId>org.evrete</groupId>
-        <version>1.0.2</version>
+        <groupId>org.evrete-showcase</groupId>
+        <version>1.0.3</version>
     </parent>
 
     <packaging>jar</packaging>
     <name>showcase-shared</name>
-    <version>1.0.2</version>
+    <version>1.0.3</version>
 
     <dependencies>
         <dependency>
             <groupId>com.google.code.gson</groupId>
             <artifactId>gson</artifactId>
-            <version>2.9.0</version>
+            <version>2.10.1</version>
         </dependency>
     </dependencies>
 </project>

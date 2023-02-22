@@ -93,13 +93,9 @@ public class Entity {
 
         @Override
         public TypeField getField(String name) {
-            TypeField field = super.getField(name);
-            if (field != null) return field;
-
-
             String[] parts = name.split("\\.");
             if (parts.length != 2) {
-                return null;
+                throw new IllegalStateException();
             }
 
             String key = parts[1];
