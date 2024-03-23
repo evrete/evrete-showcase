@@ -26,18 +26,6 @@ public class WorldTime {
         return this;
     }
 
-/*
-    @SuppressWarnings("unused")
-    public int hour() {
-        return calendar.get(Calendar.HOUR_OF_DAY);
-    }
-
-    @SuppressWarnings("unused")
-    public int minute() {
-        return calendar.get(Calendar.MINUTE);
-    }
-*/
-
     private int absoluteTimeSeconds() {
         return (int) (calendar.getTimeInMillis() / 1000);
     }

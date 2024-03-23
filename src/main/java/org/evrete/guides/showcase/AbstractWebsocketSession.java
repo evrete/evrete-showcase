@@ -1,7 +1,5 @@
 package org.evrete.guides.showcase;
 
-import org.evrete.guides.showcase.MessageWriter;
-
 public abstract class AbstractWebsocketSession {
     protected final MessageWriter writer;
 

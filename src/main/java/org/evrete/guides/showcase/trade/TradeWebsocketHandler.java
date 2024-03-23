@@ -2,11 +2,11 @@ package org.evrete.guides.showcase.trade;
 
 import org.evrete.KnowledgeService;
 import org.evrete.api.Knowledge;
+import org.evrete.guides.showcase.AbstractWebsocketHandler;
 import org.evrete.guides.showcase.MessageWriter;
 import org.evrete.guides.showcase.ShowcaseUtils;
 import org.evrete.guides.showcase.trade.rules.EmaRuleset;
 import org.evrete.guides.showcase.trade.rules.TradingRuleset;
-import org.evrete.guides.showcase.AbstractWebsocketHandler;
 
 import java.io.IOException;
 

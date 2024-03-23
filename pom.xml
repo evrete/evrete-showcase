@@ -59,6 +59,7 @@
 	</dependencies>
 
 	<build>
+		<finalName>evrete-showcase</finalName>
 		<plugins>
 			<plugin>
 				<groupId>org.springframework.boot</groupId>

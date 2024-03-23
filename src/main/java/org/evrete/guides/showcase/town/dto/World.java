@@ -46,11 +46,6 @@ public class World {
         return world;
     }
 
-
-    public static int randomGaussian(int mean, int stdDev, int maximum) {
-        return RandomUtils.positiveRandom(mean, stdDev, maximum);
-    }
-
     public Entity randomBusiness() {
         return RandomUtils.randomListElement(this.businesses);
     }

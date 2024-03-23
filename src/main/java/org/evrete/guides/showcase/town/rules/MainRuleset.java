@@ -66,7 +66,7 @@ public class MainRuleset extends Commons {
     /**
      * <p>
      * If person is at home, not awake, and it's wakeup time, then wake him up and
-     * set up for a new day. The <code>day_planning</code> flag lets other rulesets
+     * set up for a new day. The <code>day_planning</code> flag lets other rule sets
      * to continua with day planning, which may be different for different person
      * categories.
      * </p>
