@@ -88,6 +88,10 @@
     opacity: 0.75;
 }
 
+.ev-trade-app .list-group-item-secondary {
+    background-color: #e7e7e760 !important;
+}
+
 /* Town Model Showcase */
 .ev-town-app {
     --color-residential: green;
