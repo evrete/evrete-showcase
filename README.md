@@ -1,8 +1,14 @@
-# Evrete Showcase
+## Evrete Showcase
 
-## Installation
+### How to Run:
 
-1. Checkout the entire repository
-2. Build: ``mvn clean install``
-3. Upload the ``war`` archive(s) to a web container
-4. Open the sub-project's web page (``http://localhost:8080/evrete-stock-app/`` for example) in your browser
+1. Clone the entire repository.
+2. Execute: `mvn spring-boot:run`
+3. Then, open in your browser:
+   1. Stock Trading App: <http://localhost:8080/stock-app.html>
+   2. Town Simulation: <http://localhost:8080/town-abm.html>
+
+
+### Notes
+
+*The repository uses the latest Java LTS version (21). Please adjust the `pom.xml` file if your requirements differ.*

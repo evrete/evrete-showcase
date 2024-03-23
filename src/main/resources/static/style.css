@@ -1,0 +1,177 @@
+.ev-showcase #logs {
+    font-family: monospace !important;
+    font-size: 0.85rem !important;
+}
+
+.ev-showcase #logs .ERROR {
+    color: darkred;
+}
+
+/* Trade App Showcase */
+.ev-trade-app {
+    --ev-ohlc-long-color: #05765D;
+    --ev-ohlc-short-color: #C8043F;
+    --ev-gray-color: #666;
+    --ev-label-color: #66666666;
+    --ev-text-font-size: 0.5rem;
+}
+
+.ev-trade-app .ohlc-hl {
+    stroke-width: 1.0;
+    stroke: var(--ev-gray-color);
+}
+
+.ev-trade-app .ohlc-short {
+    stroke: var(--ev-ohlc-short-color);
+}
+
+.ev-trade-app .ohlc-long {
+    stroke: var(--ev-ohlc-long-color);
+}
+
+.ev-trade-app #paths path {
+    fill: none !important;
+    stroke-width: 1.0;
+}
+
+.ev-trade-app .label {
+    font-size: var(--ev-text-font-size);
+}
+
+.ev-trade-app #paths .label.top {
+    text-anchor: end;
+}
+
+.ev-trade-app #paths .label.bottom {
+    text-anchor: start;
+}
+
+.ev-trade-app .stroke-main {
+    stroke: var(--ev-gray-color);
+}
+
+.ev-trade-app .stroke-1x {
+    stroke-width: 0.6;
+}
+
+.ev-trade-app .stroke-2x {
+    stroke-width: 1.2;
+}
+
+.ev-trade-app .stroke-4x {
+    stroke-width: 1.8;
+}
+
+.ev-trade-app .y-label, .ev-trade-app .x-label {
+    font-size: var(--ev-text-font-size);
+    text-anchor: middle;
+    font-family: monospace;
+    color: var(--ev-label-color);
+}
+
+.ev-trade-app .y-label {
+    text-anchor: start;
+}
+
+.ev-trade-app .x-label {
+    text-anchor: middle;
+}
+
+.ev-trade-app .grid-line {
+    stroke-width: 0.4;
+    stroke-dasharray: .6 1.2;
+    stroke: var(--ev-gray-color);
+}
+
+.ev-trade-app #shades {
+    fill: linen;
+    opacity: 0.75;
+}
+
+.ev-trade-app .list-group-item-secondary {
+    background-color: #e7e7e760 !important;
+}
+
+/* Town Model Showcase */
+.ev-town-app {
+    --color-residential: green;
+    --color-business: #a42;
+    --color-commuting: #0d6efd3f;
+}
+
+.ev-town-app #map-wrapper {
+    position: relative;
+}
+
+.ev-town-app #zoom-controls {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    z-index: 1000;
+}
+
+.ev-town-app #credits {
+    position: absolute;
+    opacity: 0.5;
+    left: 0;
+    bottom: 0;
+    padding: 2px 4px;
+    z-index: 3;
+}
+
+.ev-town-app #chart-time {
+    font-family: monospace !important;
+    font-size: 0.8em;
+    white-space: nowrap;
+}
+
+.ev-town-app #chart-pie circle {
+    fill: none;
+    stroke: #999999;
+    stroke-width: 0.5;
+}
+
+.ev-town-app #chart-svg path {
+    stroke: lightgray;
+    stroke-width: 0.5;
+    opacity: 0.75;
+}
+
+.ev-town-app #chart-pie path.RESIDENTIAL {
+    fill: var(--color-residential);
+}
+
+.ev-town-app #chart-pie path.BUSINESS {
+    fill: var(--color-business);
+}
+
+.ev-town-app #chart-pie path.COMMUTING {
+    fill: var(--color-commuting);
+}
+
+.ev-town-app #svg-layers rect {
+    stroke: none;
+    pointer-events: none;
+}
+
+.ev-town-app #svg-layers .RESIDENTIAL rect {
+    fill: var(--color-residential);
+}
+
+.ev-town-app #svg-layers .BUSINESS rect {
+    fill: var(--color-business);
+}
+
+.ev-town-app #svg-layers .COMMUTING rect {
+    fill: var(--color-commuting);
+}
+
+.ev-town-app .legends td.v {
+    font-family: monospace;
+    text-align: right;
+}
+
+.ev-town-app #rule-stats td + td {
+    font-family: monospace;
+    text-align: right;
+}
